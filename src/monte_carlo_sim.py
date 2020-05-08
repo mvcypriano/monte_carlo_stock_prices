@@ -1,23 +1,30 @@
-import pandas_datareader.data as web
+from alpha_vantage.timeseries import TimeSeries
+from alpha_vantage.techindicators import TechIndicators
 import pandas as pd
 import datetime as dt
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import style
+import os
 
 style.use('ggplot')
+key=os.getenv('ALPHAVANTAGE_API_KEY')
+ts = TimeSeries(key, output_format='pandas')
+ti = TechIndicators(key)
 
-start = dt.datetime(2017, 01, 03)
-end = dt.datetime(2017, 11, 20)
+# aapl_data is a pandas dataframe, aapl_meta_data is a dict
+aapl_data, aapl_meta_data = ts.get_daily(symbol='AAPL')
+# aapl_sma is a dict, aapl_meta_sma also a dict
+#aapl_sma, aapl_meta_sma = ti.get_sma(symbol='AAPL')
 
-prices = web.DataReader('AAPL', 'google', start, end)['Close']
+prices = aapl_data['4. close']
 returns = prices.pct_change()
 
 last_price = prices[-1]
 
 #Number of Simulations
 num_simulations = 1000
-num_days = 252
+num_days = 15
 
 simulation_df = pd.DataFrame()
 
